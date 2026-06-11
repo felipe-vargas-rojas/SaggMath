@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Declarative Data Group (DDGroup) Spec</title>
+    <script
+      src="https://www.w3.org/Tools/respec/respec-w3c"
+      class="remove"
+      defer
+    ></script>
+    <script class="remove">
+      // All config options at https://respec.org/docs/
+    
+      var respecConfig = {
+        specStatus: "unofficial",
+        // noTR: true,
+        // noSOTD: true,
+        shortName: "unofficial",
+        // edDraftURI: "https://purl.org/ddg/",  // Your GitHub Pages URL
+        // //edDraftURI: "https://yourusername.github.io/your-repo/",
+        editors: [{
+            name: "Felipe Vargas-Rojas",
+            company: "French Research Institute for Sustainable Development (IRD)-UMR ESPACE-DEV",
+            companyURL: "https://www.espace-dev.fr/",
+            mailto: "felipe.vargas-rojas@ird.fr"
+        },
+        {
+            name: "Danai Symeonidou",
+            company: "National Research Institute for Agriculture, Food and Environment (INRAE)-UMR MISTEA"
+        },
+        {
+            name: "Lloreç Cabrera-Bosquet",
+            company: "National Research Institute for Agriculture, Food and Environment (INRAE)-UMR LEPSE"
+        }
+      
+        ],
+        // //noTR: true,  // <-- THIS eliminates undefined
+        // //authors: [ /* optional additional contributors */ ],
+        // //github: "https://github.com/xxxx",
+        // license: "cc-by",
+        //maxTocLevel: 3,
+        //noIDLSection: true,  // Skip IDL if not needed
+        //localBib: { /* your biblio refs */ }
+        // See https://respec.org/docs/#xref for usage.
+        github: {
+          branch: "main",
+          repoURL: "felipe-vargas-rojas/ddg", 
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="shacl-spec.css">
+  </head>
+  <body>
+    <section id="abstract">
+      <p> We introduce the concept of Declarative Data Groups (DDGroup). 
+        A DDGroup defines the way instances can be assigned 
+            to groups given a set of conditions. 
+            For example, experimental observations can be grouped by 
+            type of sensor or area. This novel concept empowers the 
+            declaration of various types of groups. Group declarations 
+            are stored alongside the data and invoked via a query. This notion of groups permits 
+            to execute aggregate functions concerning the members belonging to a declared group. </p>
+    </section>
+    <section id="sotd">
+        <p>Feedback welcome: &lt;<a href="mailto:felipe.vargas-rojas@ird.fr">felipe.vargas-rojas@ird.fr</a>&gt; or GitHub issues.</p>
+    </section>
+    <section class="informative">
+      <h2>Introduction</h2>
+      <p>The Shape Constraint Language (SHACL), a W3C recommendation, in their advanced features
+        (SHACL-AF) enable to describe derived values using SHACL-SPARQL and Node rules. 
+        However, at present, there is a lack of a standard to describe dynamic groups and 
+        aggregate calculations of that groups. DDGroups built on top of SHACL-AF and offer
+        multiple constructors in RDF to declare groups and also calculations about that groups.
+        In a context of heterogenous and incomplete data, DDGroups are suitable to leverage semantic and contextual 
+        data. Besides, aggregate functions can be adapted to a particular knowledge model such as 
+        the standard ontology SOSA.   
+      </p>
+
+
+      <section>
+        <h3>Document Conventions </h3>
+
+        This document uses the following namespaces: 
+        <table class="term-table">
+        <tbody>
+          <tr>
+            <th>Prefix</th>
+            <th>Namespace</th>
+          </tr>
+          <tr>
+            <td><code>rdf:</code></td>
+            <td><code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code></td>
+          </tr>
+          <tr>
+            <td><code>rdfs:</code></td>
+            <td><code>http://www.w3.org/2000/01/rdf-schema#</code></td>
+          </tr>
+          <tr>
+            <td><code>sh:</code></td>
+            <td><code>http://www.w3.org/ns/shacl#</code></td>
+          </tr>
+          <tr>
+            <td><code>xsd:</code></td>
+            <td><code>http://www.w3.org/2001/XMLSchema#</code></td>
+          </tr>
+          <tr>
+            <td><code>ex:</code></td>
+            <td><code>http://example.com/ns#</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      Different boxes are used to display examples 
+        <pre class="example-shapes">
+          # This box represents DDGroup in RDF Turtle
+        </pre>
+
+        <pre class="example-data">
+          # This box represents RDF data
+        </pre>
+
+        <pre class="example-other">
+          # This box represents an SPARQL query
+        </pre>
+
+        <pre class="example-results">
+          # This box represents an SPARQL output
+        </pre>
+      </section>
+    </section>
+    
+    <!-- my spect -->
+    <section>
+      <h2>DDGroups</h2>
+      <p>Main class inspired in sh:NodeShape, with a different semantic of groups</p>
+       <pre class="example-shapes">
+          ex:obsDDG rdf:type sh:NodeShape, ddg:DDGroup.
+        </pre>
+      <section>
+        <h3>ddg:TargetClass</h3>
+        <p>
+          The initial group of elements, for instance all the instances of the class observation. 
+          DDGroups can only have one target class and it is mandatory. 
+        </p>
+        <pre class="example-shapes">
+          ex:obsDDG ddg:targetClass  sosa:Observation.
+        </pre>
+      </section>
+      <section>
+        <h3>ddg:TargetExpression</h3>
+        <p>
+          Related to the ddg:TargetClass, it permits to add a pattern to the given class. 
+          For instance, observations about temperature. DDGroups can have multiple target expressions
+        </p>
+        <pre class="example-shapes">
+          ex:obsDDG ddg:targetExpression [
+            sosa:observedProperty ex:PAR ; ## added to the target class
+          ];
+        </pre>
+      </section>
+    </section>
+
+    <!-- grouping conditions  -->
+     <section>
+      <h2>Grouping Conditions</h2>
+      <p> DDGroups can have one or several Grouping Conditions (GC). A GC is compounded  
+        of two main elements a Path and a Node. 
+        The node can be a constant or a Variable. 
+        If the Node is a Variable thus this declaration is going 
+        to produce one group for each different value on the data. </p>
+      
+      <pre class="example-shapes">
+        ex:obsDDG ddg:groupingCondition [
+          ddg:path sosa:resultTime;
+          ddg:var "?dateNoTime";
+          ddg:map xsd:date # transform the value obtained from the path, xsd:gMonthDay is a ARQ jena function already loaded
+        ];
+      </pre>
+      <section>
+        <h3>ddg:path</h3>
+        <p>
+          GCs often refer to a node reachable from the current focus node, the path indicates
+          how to navigate to that node. A path can be an URI node about a RDF property, or a literal 
+          with a nested Path. For instance, "sosa:hasResult/qudt:numericValue/". We refer to this obtained
+          node as the local node to distinguish from the focus node. 
+        </p>
+      </section>
+      <section>
+        <h3>ddg:var</h3>
+        <p>
+          A variable enables to identify the GC when invoked in a query. 
+        </p>
+      </section>
+      <section>
+        <h3>ddg:map</h3>
+        <p>
+          Map functions are suitable to apply transformations to the local node. For instance, transform a time date to a date.
+        </p>
+      </section>
+    </section>
+
+    <!-- filters  -->
+     <section>
+      <h2>DDGroup filters</h2>
+      <p> DDGroup filters are associated to Grouping Conditions (GC), the path in a GC enable 
+        to access to a local node. A filter facilitate the comparison between the focus and local node properties.
+        For instance, observations collected in a period interval related to an experiment.
+      </p>
+      <pre class="example-shapes">
+        ddg:groupingCondition  [
+          ddg:path "sosa:hasFeatureOfInterest/^ex:sownIn/ex:participatesIn";
+          ddg:var "?exp";
+          ddg:filter [
+                  ddg:localPath ex:initialDate;
+                  ddg:cond ddg:lessThan;
+                  ddg:path sosa:resultTime;] ;
+          ddg:filter [
+                ddg:localPath ex:endDate;
+                ddg:cond ddg:greaterThan;
+                ddg:path sosa:resultTime;]
+        ];
+      </pre>
+
+      <section>
+        <h3>ddg:localPath</h3>
+        <p>
+          Path from the local node.
+        </p>
+      </section>
+      <section>
+        <h3>ddg:cond</h3>
+        <p>
+          Filter condition, e.g., less than, equal, greather than.
+        </p>
+      </section>
+      <section>
+        <h3>ddg:path</h3>
+        <p>
+          Path from the focus node.
+        </p>
+      </section>
+    </section>
+
+    <!-- Rules  -->
+     <section>
+      <h2>Mathematical SHACL Rules (sh-math:NodeRule)</h2>
+      <p>The previous constructors facilitate the declaration of groups, in this section
+        we detail particular rules to apply aggregate functions to the groups, the rule take into account that the group contain elemnts with numerical values.
+      </p>
+      <pre class="example-shapes">
+        sh:rule [
+          a sh-math:NodeRule ;
+          sh:path ex:avgTemp;
+          sh:datatype xsd:integer  ;
+          sh:values [
+            agg-sosa:avg(sh:this ex:Temperature  unit:DEG_C  )
+          ];
+          sh:order 2;
+        ];
+      </pre>
+      <section>
+        <h3>Query-Answerinng for DDGroups</h3>
+        <p>
+          a DDGroup declaration can have multiple node rules, each rule enable 
+          an aggregate calculation considering memebers of a group. This 
+          DDGroup can be access from a SPARQL query and particular 
+          node rules can be invoked. The system will only compute that rule, althougt
+          the system can have various rules.
+        </p>
+      </section>
+      
+    </section>
+
+    <!-- Functions  -->
+     <section>
+      <h2>Ontology-Based Aggregate Functions</h2>
+      <p>....</p>
+      <section>
+        <h3>generic (non model)</h3>
+        <p>
+        </p>
+      </section>
+      <section>
+        <h3>SOSA ontology</h3>
+        <p>
+        </p>
+
+        <aside class="note" title="Extra models">
+        <p>Other models such as I-ADOPT and the Data Cube can be incorporated in the framework.</p>
+      </aside>
+      </section>
+      
+    </section>
+  </body>
+</html>
