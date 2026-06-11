@@ -1,0 +1,44 @@
+@prefix ex: <http://www.example.org#>. 
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.  
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.  
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.  
+@prefix dbp: <http://dbpedia.org/property/> .  
+@prefix wkd: <http://www.wikidata.org/entity/>. 
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>. 
+@prefix qudt: <http://qudt.org/schema/qudt/>.  
+@prefix unit: <http://qudt.org/vocab/unit/>.  
+@prefix sosa: <http://www.w3.org/ns/sosa/>.
+
+ex:obs_8457d200-f3f0-4432-9a61-c5983b695fc9_temp a sosa:Observation ;
+sosa:resultTime "2013-02-15T16:00:00+01:00"^^xsd:dateTimeStamp ;
+sosa:hasFeatureOfInterest ex:03_p;
+sosa:observedProperty ex:Temperature;
+sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue "24.2333333333333"^^xsd:double ; qudt:unit unit:DEG_C].
+ex:obs_8457d200-f3f0-4432-9a61-c5983b695fc9_par a sosa:Observation ;
+sosa:resultTime "2013-02-15T16:00:00+01:00"^^xsd:dateTimeStamp ;
+sosa:hasFeatureOfInterest ex:03_p;
+sosa:observedProperty ex:PAR;
+sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue "187.833333333333"^^xsd:double ; qudt:unit unit:MicroMOL-PER-M2-SEC].
+ex:obs_8457d200-f3f0-4432-9a61-c5983b695fc9_rh a sosa:Observation ;
+sosa:resultTime "2013-02-15T16:00:00+01:00"^^xsd:dateTimeStamp ;
+sosa:hasFeatureOfInterest ex:03_p;
+sosa:observedProperty ex:PAR;
+sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue "19.1333333333333"^^xsd:double ; qudt:unit unit:MicroMOL-PER-M2-SEC].
+
+ex:obs_1e67490d-79ff-44cf-9055-eb5dfeffd339_temp a sosa:Observation ;
+sosa:resultTime "2013-02-15T18:00:00+01:00"^^xsd:dateTimeStamp ;
+sosa:hasFeatureOfInterest ex:03_p;
+sosa:observedProperty ex:Temperature;
+sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue "24.0333333333333"^^xsd:double ; qudt:unit unit:DEG_C].
+ex:obs_1e67490d-79ff-44cf-9055-eb5dfeffd339_par a sosa:Observation ;
+sosa:resultTime "2013-02-15T18:00:00+01:00"^^xsd:dateTimeStamp ;
+sosa:hasFeatureOfInterest ex:03_p;
+sosa:observedProperty ex:PAR;
+sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue "130.633333333333"^^xsd:double ; qudt:unit unit:MicroMOL-PER-M2-SEC].
+ex:obs_1e67490d-79ff-44cf-9055-eb5dfeffd339_rh a sosa:Observation ;
+sosa:resultTime "2013-02-15T18:00:00+01:00"^^xsd:dateTimeStamp ;
+sosa:hasFeatureOfInterest ex:03_p;
+sosa:observedProperty ex:PAR;
+sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue "20.2"^^xsd:double ; qudt:unit unit:MicroMOL-PER-M2-SEC].
+
+

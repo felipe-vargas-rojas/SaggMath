@@ -96,28 +96,36 @@ sosa:Sensor  rdf:type  rdfs:Class .
 
 sosa:Observation  rdf:type  rdfs:Class .
 
-sh-math:getBaseUnit  rdf:type  sh:SPARQLFunction ;
-        rdfs:comment   "Get the base unit from a given unit" ;
+sh-math:toTargetUnit  rdf:type  sh:SPARQLFunction ;
+        rdfs:comment   "Transform the quantity value to a target unit." ;
         sh:parameter   [ sh:datatype     qudt:Unit ;
-                         sh:description  "The input unit" ;
+                         sh:description  "The target unit" ;
+                         sh:path         sh-math:unit2
+                       ] ;
+        sh:parameter   [ sh:datatype     qudt:QuantityValue ;
+                         sh:description  "The input quantity" ;
                          sh:path         sh-math:op1
                        ] ;
-        sh:returnType  qudt:Unit ;
-        sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n\t\tSELECT  (?unit2 AS ?result)\n        WHERE {\n            $op1  qudt:hasDimensionVector ?dimVector .\n            ?unit2 qudt:hasDimensionVector ?dimVector.\n            ?unit2  qudt:conversionMultiplier ?multiplier2 .\n            FILTER(?multiplier2= 1.0).\n            FILTER NOT EXISTS { ?unit2 qudt:conversionOffset ?offset }\n        }\n\t\t" .
+        sh:returnType  xsd:decimal ;
+        sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n        PREFIX unit: <http://qudt.org/vocab/unit/>\n        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n        SELECT ?result\n        WHERE {\n        {\n            $op1  qudt:numericValue ?value;\n                qudt:unit ?unit1.\n            FILTER(?unit1 = $unit2)\n            BIND( ?value AS ?result )\n        }\n        UNION\n        {\n            $op1  qudt:numericValue ?value;\n                qudt:unit ?unit1.\n            FILTER(?unit1 != $unit2)\n            OPTIONAL {?unit1 qudt:conversionMultiplier ?M1 . }\n            OPTIONAL {?unit1 qudt:conversionOffset ?offset1 .  }\n            BIND( if ( bound(?offset1), ?offset1, 0.0) AS ?O1 )\n            BIND( if ( bound(?M1), ?M1, 0.0) AS ?M11 )\n            OPTIONAL {$unit2 qudt:conversionMultiplier ?M2 . }\n            OPTIONAL {$unit2 qudt:conversionOffset ?offset2 .  }\n            BIND( if ( bound(?offset2), ?offset2, 0.0) AS ?O2 )\n            BIND( if ( bound(?M2), ?M2, 1.0) AS ?M22 )\n            BIND( xsd:double ((?value + ?O1)*?M11) / xsd:double(?M22) - ?O2 AS ?result )\n        }\n        }\n        " .
 
-sh-math:sum  rdf:type  sh:SPARQLFunction ;
-        rdfs:comment   "Compute the AVG of a group of harmonised quantity values referring to an observed property. Data conforms to the SOSA ontology" ;
-        sh:parameter   [ sh:description  "The target unit used in the integration" ;
-                         sh:path         sh-math:target
+sh-math:toTargetUnitGeneric
+        rdf:type       sh:SPARQLFunction ;
+        rdfs:comment   "Transform the quantity value to a target unit." ;
+        sh:parameter   [ sh:datatype     qudt:Unit ;
+                         sh:description  "The target unit" ;
+                         sh:path         sh-math:unit2
                        ] ;
-        sh:parameter   [ sh:description  "The observed property IRI" ;
-                         sh:path         sh-math:prop
+        sh:parameter   [ sh:datatype     qudt:Unit ;
+                         sh:description  "The source unit" ;
+                         sh:path         sh-math:unit1
                        ] ;
-        sh:parameter   [ sh:description  "The observed property IRI" ;
-                         sh:path         sh-math:object
+        sh:parameter   [ sh:datatype     xsd:double ;
+                         sh:description  "The value in the current unit" ;
+                         sh:path         sh-math:quantityValue
                        ] ;
-        sh:returnType  xsd:double ;
-        sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n        PREFIX sosa: <http://www.w3.org/ns/sosa/>\n        PREFIX sh-math:   <http://www.inrae.fr/shacl-math/>\n        PREFIX  unit: <http://qudt.org/vocab/unit/>\n\t\tSELECT  (SUM(?qvH) AS ?result)\n        WHERE {\n            $object  sh-math:hasMember ?obs .\n            ?obs sosa:observedProperty $prop;\n            sosa:hasResult ?qv.\n            ?qv qudt:numericValue ?value.\n            BIND(sh-math:toTargetUnit(?qv, $target) AS ?qvH)\n        }\n\t\t" .
+        sh:returnType  xsd:decimal ;
+        sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n        PREFIX unit: <http://qudt.org/vocab/unit/>\n        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n        SELECT ( xsd:double (($quantityValue + ?O1)*?M11) / xsd:double(?M22) - ?O2 AS ?result)\n        WHERE {\n         OPTIONAL {$unit1 qudt:conversionMultiplier ?M1 . }\n         OPTIONAL {$unit1 qudt:conversionOffset ?offset1 .  }\n         BIND( if ( bound(?offset1), ?offset1, 0.0) AS ?O1 )\n         BIND( if ( bound(?M1), ?M1, 0.0) AS ?M11 )\n\n         OPTIONAL {$unit2 qudt:conversionMultiplier ?M2 . }\n         OPTIONAL {$unit2 qudt:conversionOffset ?offset2 .  }\n         BIND( if ( bound(?offset2), ?offset2, 0.0) AS ?O2 )\n         BIND( if ( bound(?M2), ?M2, 1.0) AS ?M22 )\n        }\n        " .
 
 sh-math:toBaseUnit  rdf:type  sh:SPARQLFunction ;
         rdfs:comment   "Transform the quantity value to the base unit. The quantity can be an scale of the base unit like cm or mm, or other unit like inches" ;
@@ -148,56 +156,11 @@ sh-math:toWIKIDATAfromQUDT
         sh:returnType  qudt:Unit ;
         sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n        PREFIX unit: <http://qudt.org/vocab/unit/>\n        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n        PREFIX wdtn: <http://www.wikidata.org/prop/direct-normalized/>\n        SELECT ?unitWIKIDATA\n        WHERE {\n          ?unitWIKIDATA wdtn:P2968 $unit1\n        }\n        " .
 
-sh-math:toTargetUnit  rdf:type  sh:SPARQLFunction ;
-        rdfs:comment   "Transform the quantity value to a target unit." ;
+sh-math:getBaseUnit  rdf:type  sh:SPARQLFunction ;
+        rdfs:comment   "Get the base unit from a given unit" ;
         sh:parameter   [ sh:datatype     qudt:Unit ;
-                         sh:description  "The target unit" ;
-                         sh:path         sh-math:unit2
-                       ] ;
-        sh:parameter   [ sh:datatype     qudt:QuantityValue ;
-                         sh:description  "The input quantity" ;
+                         sh:description  "The input unit" ;
                          sh:path         sh-math:op1
                        ] ;
-        sh:returnType  xsd:decimal ;
-        sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n        PREFIX unit: <http://qudt.org/vocab/unit/>\n        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n        SELECT ?result\n        WHERE {\n        {\n            $op1  qudt:numericValue ?value;\n                qudt:unit ?unit1.\n            FILTER(?unit1 = $unit2)\n            BIND( ?value AS ?result )\n        }\n        UNION\n        {\n            $op1  qudt:numericValue ?value;\n                qudt:unit ?unit1.\n            FILTER(?unit1 != $unit2)\n            OPTIONAL {?unit1 qudt:conversionMultiplier ?M1 . }\n            OPTIONAL {?unit1 qudt:conversionOffset ?offset1 .  }\n            BIND( if ( bound(?offset1), ?offset1, 0.0) AS ?O1 )\n            BIND( if ( bound(?M1), ?M1, 0.0) AS ?M11 )\n            OPTIONAL {$unit2 qudt:conversionMultiplier ?M2 . }\n            OPTIONAL {$unit2 qudt:conversionOffset ?offset2 .  }\n            BIND( if ( bound(?offset2), ?offset2, 0.0) AS ?O2 )\n            BIND( if ( bound(?M2), ?M2, 1.0) AS ?M22 )\n            BIND( xsd:double ((?value + ?O1)*?M11) / xsd:double(?M22) - ?O2 AS ?result )\n        }\n        }\n        " .
-
-sh-math:avg  rdf:type  sh:SPARQLFunction ;
-        rdfs:comment   "Compute the AVG of a group of harmonised quantity values referring to an observed property. Data conforms to the SOSA ontology" ;
-        sh:parameter   [ sh:description  "The target unit used in the integration" ;
-                         sh:path         sh-math:target
-                       ] ;
-        sh:parameter   [ sh:description  "The observed property IRI" ;
-                         sh:path         sh-math:prop
-                       ] ;
-        sh:parameter   [ sh:description  "The observed property IRI" ;
-                         sh:path         sh-math:object
-                       ] ;
-        sh:returnType  xsd:double ;
-        sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n        PREFIX sosa: <http://www.w3.org/ns/sosa/>\n        PREFIX sh-math:   <http://www.inrae.fr/shacl-math/>\n        PREFIX  unit: <http://qudt.org/vocab/unit/>\n\t\tSELECT  (AVG(?qvH) AS ?result)\n        WHERE {\n            $object  sh-math:hasMember ?obs .\n            ?obs sosa:observedProperty $prop;\n            sosa:hasResult ?qv.\n            ?qv qudt:numericValue ?value.\n            BIND(sh-math:toTargetUnit(?qv, $target) AS ?qvH)\n        }\n\t\t" .
-
-sh-math:toTargetUnitGeneric
-        rdf:type       sh:SPARQLFunction ;
-        rdfs:comment   "Transform the quantity value to a target unit." ;
-        sh:parameter   [ sh:datatype     qudt:Unit ;
-                         sh:description  "The target unit" ;
-                         sh:path         sh-math:unit2
-                       ] ;
-        sh:parameter   [ sh:datatype     qudt:Unit ;
-                         sh:description  "The source unit" ;
-                         sh:path         sh-math:unit1
-                       ] ;
-        sh:parameter   [ sh:datatype     xsd:double ;
-                         sh:description  "The value in the current unit" ;
-                         sh:path         sh-math:quantityValue
-                       ] ;
-        sh:returnType  xsd:decimal ;
-        sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n        PREFIX unit: <http://qudt.org/vocab/unit/>\n        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n        SELECT ( xsd:double (($quantityValue + ?O1)*?M11) / xsd:double(?M22) - ?O2 AS ?result)\n        WHERE {\n         OPTIONAL {$unit1 qudt:conversionMultiplier ?M1 . }\n         OPTIONAL {$unit1 qudt:conversionOffset ?offset1 .  }\n         BIND( if ( bound(?offset1), ?offset1, 0.0) AS ?O1 )\n         BIND( if ( bound(?M1), ?M1, 0.0) AS ?M11 )\n\n         OPTIONAL {$unit2 qudt:conversionMultiplier ?M2 . }\n         OPTIONAL {$unit2 qudt:conversionOffset ?offset2 .  }\n         BIND( if ( bound(?offset2), ?offset2, 0.0) AS ?O2 )\n         BIND( if ( bound(?M2), ?M2, 1.0) AS ?M22 )\n        }\n        " .
-
-sh-math:xsd-time-to-seconds
-        rdf:type       sh:SPARQLFunction ;
-        rdfs:comment   "Get the total time in seconds from an xsd-time literal <HH:MM:SS> " ;
-        sh:parameter   [ sh:description  "a given xsd time" ;
-                         sh:path         sh-math:time
-                       ] ;
-        sh:returnType  xsd:double ;
-        sh:select      "\n        PREFIX xfn: <http://www.w3.org/2005/xpath-functions#>\n\t\tSELECT ?result\n        WHERE {\n            BIND(xfn:seconds-from-time($time) AS ?seconds )\n            BIND(xfn:minutes-from-time($time) AS ?minutes )\n            BIND(xfn:hours-from-time($time) AS ?hours )\n\n            BIND(?seconds + ?minutes*60 + ?hours*60*60  AS ?result)\n        }\n\t\t" .
+        sh:returnType  qudt:Unit ;
+        sh:select      "\n        PREFIX qudt: <http://qudt.org/schema/qudt/>\n\t\tSELECT  (?unit2 AS ?result)\n        WHERE {\n            $op1  qudt:hasDimensionVector ?dimVector .\n            ?unit2 qudt:hasDimensionVector ?dimVector.\n            ?unit2  qudt:conversionMultiplier ?multiplier2 .\n            FILTER(?multiplier2= 1.0).\n            FILTER NOT EXISTS { ?unit2 qudt:conversionOffset ?offset }\n        }\n\t\t" .

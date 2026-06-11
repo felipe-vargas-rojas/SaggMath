@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 """ This module aims at converting a csv file into a RDF graph in turtle syntax.
     More specificly it will read the columns and parse them using the given associative array
@@ -94,7 +94,7 @@ class CSVtoTurtleConverter(object):
         turtle_block = ''.encode('utf-8', 'ignore')
 
         triple_line = None
-        print("row:", row)
+        #print("row:", row)
         for rule in self.assoc_rules:
             skip = False
             for value in Formatter().parse(rule):

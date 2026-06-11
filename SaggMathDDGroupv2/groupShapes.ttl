@@ -1,0 +1,54 @@
+@prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix  rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix  xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix  time: <http://www.w3.org/2006/time#>.
+@prefix  sosa: <http://www.w3.org/ns/sosa/>.
+
+@prefix  unit: <http://qudt.org/vocab/unit/>.
+@prefix  qudt: <http://qudt.org/schema/qudt/>.
+@prefix sparql: <http://datashapes.org/sparql#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@prefix sh-math:   <http://www.inrae.fr/shacl-math/> .
+@prefix  ex: <http://www.example.org#>.
+
+@prefix  ddg: <http://www.purl.org/ddgroup/>.
+
+#jena
+@prefix xfn: <http://www.w3.org/2005/xpath-functions#>.
+
+<http://www.example.org>
+    rdf:type owl:Ontology .
+
+
+
+ex:groupOfPeople a ddg:DDGroup, sh:NodeShape;
+    ddg:targetClass  foaf:Person; 
+    ddg:groupingCondition  [ddg:path ex:gender; ddg:var "?g" ];
+    ddg:spatialCondition  [ddg:path ex:livesIn; ddg:var "?place" ];
+	sh:rule [
+		a sh-math:NodeRule ;
+		sh:path ex:numberOfPeople;
+		sh:datatype xsd:double ;
+		sh:values [
+			sh-math:count(sh:this)
+		];
+		sh:order 2;
+	].
+
+
+
+# 
+ex:PhenoarchObservations a ddg:DDGroup, sh:NodeShape;
+    ddg:targetClass  sosa:Observations; 
+    ddg:spatialCondition  [ddg:path sosa:featureOfInterest; ddg:node "ex:Phenoarch" ];
+    sh:rule [
+		a sh-math:NodeRule ;
+		sh:path ex:avgTemperature;
+		sh:datatype xsd:double ;
+		sh:values [
+			sh-math:avg(sh:this ex:Temperature unit:DEG_C)
+		];
+		sh:order 2;
+	].

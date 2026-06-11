@@ -1,0 +1,21 @@
+@prefix ex: <http://www.example.org#>. 
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.  
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.  
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.  
+@prefix dbp: <http://dbpedia.org/property/> .  
+@prefix wkd: <http://www.wikidata.org/entity/>. 
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+ex:ZA13 a ex:Experiment ;
+ex:initialDate  "2013-01-24T12:00:00+01:00"^^xsd:dateTimeStamp;
+ex:endDate  "2013-03-15T12:00:00+01:00"^^xsd:dateTimeStamp .
+
+ex:ZA16 a ex:Experiment ;
+ex:initialDate  "2016-05-10T12:00:00+01:00"^^xsd:dateTimeStamp;
+ex:endDate  "2016-06-21T12:00:00+01:00"^^xsd:dateTimeStamp .
+
+ex:ZB12 a ex:Experiment ;
+ex:initialDate  "2012-05-14T12:00:00+01:00"^^xsd:dateTimeStamp;
+ex:endDate  "2012-06-22T12:00:00+01:00"^^xsd:dateTimeStamp .
+
+

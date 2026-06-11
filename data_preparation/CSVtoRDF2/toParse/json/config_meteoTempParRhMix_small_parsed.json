@@ -1,0 +1,33 @@
+{
+    "prefix" : [
+        "@prefix ex: <http://www.example.org#>.",
+        "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>. ",
+        "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>. ",
+        "@prefix xsd: <http://www.w3.org/2001/XMLSchema#>. ",
+        "@prefix dbp: <http://dbpedia.org/property/> . ",
+        "@prefix wkd: <http://www.wikidata.org/entity/>.",
+        "@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.",
+        "@prefix qudt: <http://qudt.org/schema/qudt/>. ",
+        "@prefix unit: <http://qudt.org/vocab/unit/>. ",
+        "@prefix sosa: <http://www.w3.org/ns/sosa/>."
+    ],
+    "associativeRules" :[
+        "ex:obs_{uuid_1}_temp a sosa:Observation ;",
+        "   sosa:resultTime \"{Date}\"^^xsd:dateTimeStamp ;",
+        "sosa:hasFeatureOfInterest ex:{Area}; ",
+        "sosa:observedProperty ex:Temperature;",
+        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{AirTemperature}\"^^xsd:double ; qudt:unit unit:DEG_C].\n",
+
+        "ex:obs_{uuid_1}_par a sosa:Observation ;",
+        "   sosa:resultTime \"{Date}\"^^xsd:dateTimeStamp ;",
+        "sosa:hasFeatureOfInterest ex:{Area}; ",
+        "sosa:observedProperty ex:PAR;",
+        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{PAR}\"^^xsd:double ; qudt:unit unit:MicroMOL-PER-M2-SEC].\n",
+
+        "ex:obs_{uuid_1}_rh a sosa:Observation ;",
+        "   sosa:resultTime \"{Date}\"^^xsd:dateTimeStamp ;",
+        "sosa:hasFeatureOfInterest ex:{Area}; ",
+        "sosa:observedProperty ex:PAR;",
+        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{RH}\"^^xsd:double ; qudt:unit unit:MicroMOL-PER-M2-SEC].\n"
+    ]
+}

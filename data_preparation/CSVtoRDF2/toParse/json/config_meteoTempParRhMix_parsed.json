@@ -7,8 +7,8 @@
         "@prefix dbp: <http://dbpedia.org/property/> . ",
         "@prefix wkd: <http://www.wikidata.org/entity/>.",
         "@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.",
-        "@prefix qudt: <http://qudt.org/2.1/vocab/>. ",
-        "@prefix qudt-unit: <http://qudt.org/2.1/vocab/unit>. ",
+        "@prefix qudt: <http://qudt.org/schema/qudt/>. ",
+        "@prefix unit: <http://qudt.org/vocab/unit/>. ",
         "@prefix sosa: <http://www.w3.org/ns/sosa/>."
     ],
     "associativeRules" :[
@@ -16,18 +16,18 @@
         "   sosa:resultTime \"{Date}\"^^xsd:dateTimeStamp ;",
         "sosa:hasFeatureOfInterest ex:{Area}; ",
         "sosa:observedProperty ex:Temperature;",
-        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{AirTemperature}\"^^xsd:decimal ; qudt:unit qudt-unit:DEG_C].\n",
+        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{AirTemperature}\"^^xsd:double ; qudt:unit unit:DEG_C].\n",
 
         "ex:obs_{uuid_1}_par a sosa:Observation ;",
         "   sosa:resultTime \"{Date}\"^^xsd:dateTimeStamp ;",
         "sosa:hasFeatureOfInterest ex:{Area}; ",
         "sosa:observedProperty ex:PAR;",
-        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{PAR}\"^^xsd:decimal ; qudt:unit qudt-unit:MicroMOL-PER-M2-SEC].\n",
+        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{PAR}\"^^xsd:double ; qudt:unit unit:MicroMOL-PER-M2-SEC].\n",
 
         "ex:obs_{uuid_1}_rh a sosa:Observation ;",
         "   sosa:resultTime \"{Date}\"^^xsd:dateTimeStamp ;",
         "sosa:hasFeatureOfInterest ex:{Area}; ",
         "sosa:observedProperty ex:PAR;",
-        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{RH}\"^^xsd:decimal ; qudt:unit qudt-unit:MicroMOL-PER-M2-SEC].\n"
+        "sosa:hasResult [a qudt:QuantityValue, sosa:Result ; qudt:numericValue \"{RH}\"^^xsd:double ; qudt:unit unit:MicroMOL-PER-M2-SEC].\n"
     ]
 }

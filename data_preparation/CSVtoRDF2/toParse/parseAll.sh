@@ -1,15 +1,15 @@
 #! /bin/bash
 
 
-pathToDateFormater="/home/mistea/PhD/study/thesis/tutorials/OWL examples/SHACL/saggmath/data_preparation/CSVtoRDF2/DateParser.py"
-pathToCSVparser="/home/mistea/PhD/study/thesis/tutorials/OWL examples/SHACL/saggmath/data_preparation/CSVtoRDF2/CSVparser.py"
-pathToCsv="/home/mistea/PhD/study/thesis/tutorials/OWL examples/SHACL/saggmath/data_preparation/CSVtoRDF2/toParse/csv"
-pathToCsvParsed="/home/mistea/PhD/study/thesis/tutorials/OWL examples/SHACL/saggmath/data_preparation/CSVtoRDF2/toParse/csv/parsed"
-pathToTurtle="/home/mistea/PhD/study/thesis/tutorials/OWL examples/SHACL/saggmath/data_preparation/CSVtoRDF2/toParse/turtle"
-pathToConfig="/home/mistea/PhD/study/thesis/tutorials/OWL examples/SHACL/saggmath/data_preparation/CSVtoRDF2/toParse/json"
+pathToDateFormater="/home/Vargas-Rojas/Postdoct/DevelopmentThesis/SaggMath/data_preparation/CSVtoRDF2/DateParser.py"
+pathToCSVparser="/home/Vargas-Rojas/Postdoct/DevelopmentThesis/SaggMath/data_preparation/CSVtoRDF2/CSVparser.py"
+pathToCsv="/home/Vargas-Rojas/Postdoct/DevelopmentThesis/SaggMath/data_preparation/CSVtoRDF2/toParse/csv"
+pathToCsvParsed="/home/Vargas-Rojas/Postdoct/DevelopmentThesis/SaggMath/data_preparation/CSVtoRDF2/toParse/csv/parsed"
+pathToTurtle="/home/Vargas-Rojas/Postdoct/DevelopmentThesis/SaggMath/data_preparation/CSVtoRDF2/toParse/turtle"
+pathToConfig="/home/Vargas-Rojas/Postdoct/DevelopmentThesis/SaggMath/data_preparation/CSVtoRDF2/toParse/json"
 
 
-#parse date
+parse date
 for file in $(ls "$pathToCsv")
 do
     echo $file

@@ -12,8 +12,8 @@
         "ex:{Manip}-{Pot} a ex:Plant ;",
         "   ex:sowingDate  \"{Sowing}\"^^xsd:dateTimeStamp;",
         "   ex:harvestDate  \"{Harvesting}\"^^xsd:dateTimeStamp ;",
-        "   ex:sownIn ex:{Area}",
-        "   ex:scenario  \"{Scenario}\"",
+        "   ex:sownIn ex:{Area};",
+        "   ex:scenario  \"{Scenario}\";",
         "   ex:participatesIn ex:{Manip}."  
     ]
 }

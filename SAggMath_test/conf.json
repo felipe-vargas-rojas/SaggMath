@@ -1,6 +1,6 @@
 {
     "experimentName": "Aggregations VPD experiment",
-    "rootPath": "/home/mistea/PhD/study/thesis/tutorials/OWL examples/SHACL/shacl-1.4.2/shacl-online/src/main/resources/SAggMath_test/",
+    "rootPath": "/home/felipe-vargas/PostDoctIRD/DevelopmentThesis/SaggMath/SAggMath_test/",
     "graphPath": "data.ttl",
     "shapePath": "shape_aggregations.ttl",
     "queryPath" : "query.sparql",

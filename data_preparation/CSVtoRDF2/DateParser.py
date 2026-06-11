@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 import re
@@ -29,12 +29,10 @@ __status__ = "Prototype"
 class DateFormatter:
     token = 'MATCH'
     date_format_regex = [
-        r'(?P<year>\d{4})(?P<sepD>.)(?P<mounth>\d{2})(?P=sepD)(?P<day>\d{2})',
-        r'(?P<day>\d{2})(?P<sepD>.)(?P<mounth>\d{2})(?P=sepD)(?P<year>\d{4})',
-        r'(?P<year>\d{4})(?P<sepD>.)(?P<mounth>\d{2})(?P=sepD)(?P<day>\d{2}).{0,2}\
-(?P<hour>\d{2})(?P<sepT>)(?P<minute>\d{2})(?P=sepT)(?P<second>\d{2})',
-        r'(?P<day>\d{2})(?P<sepD>.)(?P<mounth>\d{2})(?P=sepD)(?P<year>\d{4}).{0,2}\
-(?P<hour>\d{2})(?P<sepT>)(?P<minute>\d{2})(?P=sepT)(?P<second>\d{2})'
+        r'(?P<year>\d{4})(?P<sepD>[^0-9A-Za-z])(?P<mounth>\d{2})(?P=sepD)(?P<day>\d{2})[\sZT]{1}(?P<hour>\d{2})(?P<sepT>[^0-9A-Za-z])(?P<minute>\d{2})(?P=sepT)(?P<second>\d{2})',
+        r'(?P<day>\d{2})(?P<sepD>[^0-9A-Za-z])(?P<mounth>\d{2})(?P=sepD)(?P<year>\d{4})[\sZT]{1}(?P<hour>\d{2})(?P<sepT>[^0-9A-Za-z])(?P<minute>\d{2})(?P=sepT)(?P<second>\d{2})',
+    r'(?P<year>\d{4})(?P<sepD>[^0-9A-Za-z])(?P<mounth>\d{2})(?P=sepD)(?P<day>\d{2})',
+        r'(?P<day>\d{2})(?P<sepD>[^0-9A-Za-z])(?P<mounth>\d{2})(?P=sepD)(?P<year>\d{4})' # order matters
     ]
     def __init__(self,
                  year='2000',
@@ -82,6 +80,8 @@ class DateFormatter:
         return output
     @staticmethod
     def compute(stringOrMatch, token=''):
+        print 'matched item'
+        print stringOrMatch
         if stringOrMatch.__class__.__name__ == 'SRE_Match':
             dateFormatter = DateFormatter(**stringOrMatch.groupdict())
             return token + dateFormatter.asXsdDateTimeStamp()
@@ -99,8 +99,14 @@ class DateFormatter:
         old_line = stringToParse
         for pattern in DateFormatter.date_format_regex:
             patternAndToken = '(?<!' + DateFormatter.token + ')' + pattern
+            print patternAndToken
+            print "end pattern"
+            print stringToParse
+            print "end string"
             new_line = re.sub(patternAndToken, lambda line: DateFormatter.compute(
                 line, DateFormatter.token), old_line)
+            print new_line
+            print "end newline"
             if old_line != new_line:
                 old_line = new_line
         new_line = re.sub(DateFormatter.token, '', new_line)
